@@ -117,7 +117,17 @@ public class CameraAgentFactory {
                 sAndroidCameraAgent = new AndroidCameraAgentImpl();
                 sAndroidCameraAgentClientCount = 1;
             } else {
-                ++sAndroidCameraAgentClientCount;
+                CameraStateHolder camerastate = sAndroidCameraAgent.getCameraState();
+                if (camerastate != null && camerastate.isInvalid()) {
+                    Log.w(TAG, "CameraAgentFactory camerastate.isInvalid() = "
+                            + camerastate.isInvalid());
+                    sAndroidCameraAgent.recycle();
+                    sAndroidCameraAgent = null;
+                    sAndroidCameraAgent = new AndroidCameraAgentImpl();
+                    sAndroidCameraAgentClientCount = 1;
+                } else {
+                    ++sAndroidCameraAgentClientCount;
+                }
             }
             return sAndroidCameraAgent;
         } else { // API_2

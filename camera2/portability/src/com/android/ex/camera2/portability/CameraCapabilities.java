@@ -66,6 +66,14 @@ public class CameraCapabilities {
     protected float mVerticalViewAngle;
     private final Stringifier mStringifier;
 
+    protected final ArrayList<String> mSupportedColorEffects = new ArrayList<String>();
+    protected final ArrayList<String> mSupportedSaturations = new ArrayList<String>();
+    protected final ArrayList<String> mSupportedContrasts = new ArrayList<String>();
+    protected final ArrayList<String> mSupportedSharpnesses = new ArrayList<String>();
+    protected final ArrayList<String> mSupportedBrightnesses = new ArrayList<String>();
+    protected final ArrayList<String> mSupportedHues = new ArrayList<String>();
+    protected final ArrayList<String> mSupportedAntiBandings = new ArrayList<String>();
+
     /**
      * Focus modes.
      */
@@ -494,6 +502,14 @@ public class CameraCapabilities {
         mHorizontalViewAngle = src.mHorizontalViewAngle;
         mVerticalViewAngle = src.mVerticalViewAngle;
         mStringifier = src.mStringifier;
+
+        mSupportedColorEffects.addAll(src.mSupportedColorEffects);
+        mSupportedSaturations.addAll(src.mSupportedSaturations);
+        mSupportedContrasts.addAll(src.mSupportedContrasts);
+        mSupportedSharpnesses.addAll(src.mSupportedSharpnesses);
+        mSupportedBrightnesses.addAll(src.mSupportedBrightnesses);
+        mSupportedHues.addAll(src.mSupportedHues);
+        mSupportedAntiBandings.addAll(src.mSupportedAntiBandings);
     }
 
     public float getHorizontalViewAngle() {
@@ -676,16 +692,88 @@ public class CameraCapabilities {
         return mStringifier;
     }
 
+    /**
+     * Gets the supported color effects.
+     *
+     * @return a list of supported color effects. null if color effect
+     *         setting is not supported.
+     * @see #getColorEffect()
+     */
+    public List<String> getSupportedColorEffects() {
+        return new ArrayList<String>(mSupportedColorEffects);
+    }
+
+    /**
+     * Gets the supported saturations.
+     *
+     * @return a list of supported saturations. null if saturation
+     *         setting is not supported.
+     */
+    public List<String> getSupportedSaturations() {
+        return new ArrayList<String>(mSupportedSaturations);
+    }
+
+    /**
+     * Gets the supported contrasts.
+     *
+     * @return a list of supported contrasts. null if contrast
+     *         setting is not supported.
+     */
+    public List<String> getSupportedContrasts() {
+        return new ArrayList<String>(mSupportedContrasts);
+    }
+
+    /**
+     * Gets the supported sharpnesses.
+     *
+     * @return a list of supported sharpnesses. null if sharpness
+     *         setting is not supported.
+     */
+    public List<String> getSupportedSharpnesses() {
+        return new ArrayList<String>(mSupportedSharpnesses);
+    }
+
+    /**
+     * Gets the supported brightnesses.
+     *
+     * @return a list of supported brightnesses. null if brightness
+     *         setting is not supported.
+     */
+    public List<String> getSupportedBrightnesses() {
+        return new ArrayList<String>(mSupportedBrightnesses);
+    }
+
+    /**
+     * Gets the supported hues.
+     *
+     * @return a list of supported hues. null if hue
+     *         setting is not supported.
+     */
+    public List<String> getSupportedHues() {
+        return new ArrayList<String>(mSupportedHues);
+    }
+
+    /**
+     * Gets the supported antibanding values.
+     *
+     * @return a list of supported antibanding values. null if antibanding
+     *         setting is not supported.
+     * @see #getAntibanding()
+     */
+    public List<String> getSupportedAntiBanding() {
+        return new ArrayList<String>(mSupportedAntiBandings);
+    }
+
     private boolean zoomCheck(final CameraSettings settings) {
         final float ratio = settings.getCurrentZoomRatio();
         if (!supports(Feature.ZOOM)) {
             if (ratio != ZOOM_RATIO_UNZOOMED) {
-                Log.v(TAG, "Zoom is not supported");
+                Log.w(TAG, "Zoom is not supported");
                 return false;
             }
         } else {
             if (settings.getCurrentZoomRatio() > getMaxZoomRatio()) {
-                Log.v(TAG, "Zoom ratio is not supported: ratio = " +
+                Log.w(TAG, "Zoom ratio is not supported: ratio = " +
                         settings.getCurrentZoomRatio());
                 return false;
             }
@@ -696,7 +784,7 @@ public class CameraCapabilities {
     private boolean exposureCheck(final CameraSettings settings) {
         final int index = settings.getExposureCompensationIndex();
         if (index > getMaxExposureCompensation() || index < getMinExposureCompensation()) {
-            Log.v(TAG, "Exposure compensation index is not supported. Min = " +
+            Log.w(TAG, "Exposure compensation index is not supported. Min = " +
                     getMinExposureCompensation() + ", max = " + getMaxExposureCompensation() + "," +
                     " setting = " + index);
             return false;
@@ -713,7 +801,7 @@ public class CameraCapabilities {
                 Log.w(TAG, "Focus mode not supported... trying FIXED");
                 settings.setFocusMode(FocusMode.FIXED);
             } else {
-                Log.v(TAG, "Focus mode not supported:" +
+                Log.w(TAG, "Focus mode not supported:" +
                         (focusMode != null ? focusMode.name() : "null"));
                 return false;
             }
@@ -724,7 +812,7 @@ public class CameraCapabilities {
     private boolean flashCheck(final CameraSettings settings) {
         FlashMode flashMode = settings.getCurrentFlashMode();
         if (!supports(flashMode)) {
-            Log.v(TAG,
+            Log.w(TAG,
                     "Flash mode not supported:" + (flashMode != null ? flashMode.name() : "null"));
             return false;
         }
@@ -736,7 +824,7 @@ public class CameraCapabilities {
         if (mSupportedPhotoSizes.contains(photoSize)) {
             return true;
         }
-        Log.v(TAG, "Unsupported photo size:" + photoSize);
+        Log.w(TAG, "Unsupported photo size:" + photoSize);
         return false;
     }
 
@@ -745,7 +833,7 @@ public class CameraCapabilities {
         if (mSupportedPreviewSizes.contains(previewSize)) {
             return true;
         }
-        Log.v(TAG, "Unsupported preview size:" + previewSize);
+        Log.w(TAG, "Unsupported preview size:" + previewSize);
         return false;
     }
 
@@ -753,7 +841,7 @@ public class CameraCapabilities {
         if (!settings.isVideoStabilizationEnabled() || supports(Feature.VIDEO_STABILIZATION)) {
             return true;
         }
-        Log.v(TAG, "Video stabilization is not supported");
+        Log.w(TAG, "Video stabilization is not supported");
         return false;
     }
 }
