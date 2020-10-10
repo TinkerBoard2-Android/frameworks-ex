@@ -221,7 +221,7 @@ class AndroidCamera2AgentImpl extends CameraAgent {
         @Override
         public void handleMessage(final Message msg) {
             super.handleMessage(msg);
-            Log.v(TAG, "handleMessage - action = '" + CameraActions.stringify(msg.what) + "'");
+            Log.w(TAG, "handleMessage - action = '" + CameraActions.stringify(msg.what) + "'");
             int cameraAction = msg.what;
             try {
                 switch (cameraAction) {
@@ -641,6 +641,7 @@ class AndroidCamera2AgentImpl extends CameraAgent {
                     }
                 }
             } catch (final Exception ex) {
+		Log.e(TAG,"action:" + CameraActions.stringify(msg.what) + " has error:" + ex);
                 if (cameraAction != CameraActions.RELEASE && mCamera != null) {
                     // TODO: Handle this better
                     mCamera.close();
@@ -664,6 +665,7 @@ class AndroidCamera2AgentImpl extends CameraAgent {
                 }
             } finally {
                 WaitDoneBundle.unblockSyncWaiters(msg);
+		Log.w(TAG,"action:" + CameraActions.stringify(msg.what) + " done well");
             }
         }
 

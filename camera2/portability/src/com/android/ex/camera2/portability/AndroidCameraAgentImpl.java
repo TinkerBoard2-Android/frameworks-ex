@@ -264,6 +264,16 @@ class AndroidCameraAgentImpl extends CameraAgent {
         private ParametersCache mParameterCache;
         private int mCancelAfPending = 0;
 
+        private static final String KEY_BURST_SUPPORT = "burst-support";
+        private static final String KEY_BURST_LENGTH = "burst-length";
+        private static final String KEY_PREVIEW_WINDOW_SIZE = "preview-window-size";
+        private static final String KEY_SATURATION_MODE = "saturation-mode";
+        private static final String KEY_BRIGHTNESS_MODE = "brightness-mode";
+        private static final String KEY_CONTRAST_MODE = "contrast-mode";
+        private static final String KEY_HUE_MODE = "hue-mode";
+        private static final String KEY_SHARPNESS_MODE = "sharpness-mode";
+        private static final String KEY_3DNR_ENABLED = "3dnr_enabled";
+
         private class CaptureCallbacks {
             public final ShutterCallback mShutter;
             public final PictureCallback mRaw;
@@ -350,7 +360,7 @@ class AndroidCameraAgentImpl extends CameraAgent {
             super.handleMessage(msg);
 
             if (getCameraState().isInvalid()) {
-                Log.v(TAG, "Skip handleMessage - action = '" + CameraActions.stringify(msg.what) + "'");
+                Log.w(TAG, "Skip handleMessage - action = '" + CameraActions.stringify(msg.what) + "'");
                 return;
             }
             Log.v(TAG, "handleMessage - action = '" + CameraActions.stringify(msg.what) + "'");
@@ -723,6 +733,37 @@ class AndroidCameraAgentImpl extends CameraAgent {
                     parameters.setGpsProcessingMethod(gpsData.processingMethod);
                 }
             }
+
+            if (settings.getBurstMode() != null)
+                parameters.set(KEY_BURST_SUPPORT, settings.getBurstMode());
+            if (settings.getBurstLength() > 0)
+                parameters.set(KEY_BURST_LENGTH, settings.getBurstLength());
+
+            if (settings.getPreviewWindowSize() != null)
+                parameters.set(KEY_PREVIEW_WINDOW_SIZE, settings.getPreviewWindowSize());
+
+            if (settings.getColorEffect() != null)
+                parameters.setColorEffect(settings.getColorEffect());
+
+            if (settings.getSaturation() != null)
+                parameters.set(KEY_SATURATION_MODE, settings.getSaturation());
+
+            if (settings.getContrast() != null)
+                parameters.set(KEY_CONTRAST_MODE, settings.getContrast());
+
+            if (settings.getBrightness() != null)
+                parameters.set(KEY_BRIGHTNESS_MODE, settings.getBrightness());
+
+            if (settings.getSharpness() != null)
+                parameters.set(KEY_SHARPNESS_MODE, settings.getSharpness());
+
+            if (settings.getHue() != null)
+                parameters.set(KEY_HUE_MODE, settings.getHue());
+
+            if (settings.getAntiBanding() != null)
+                parameters.setAntibanding(settings.getAntiBanding());
+
+            parameters.set(KEY_3DNR_ENABLED, settings.is3dnrEnabled() ? "true" : "false");
 
         }
 

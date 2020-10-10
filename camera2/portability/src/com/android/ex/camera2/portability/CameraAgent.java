@@ -686,7 +686,16 @@ public abstract class CameraAgent {
              // cancelAutoFocus should get executed asap, set the state back to idle.
             getCameraHandler().sendMessageAtFrontOfQueue(
                     getCameraHandler().obtainMessage(CameraActions.CANCEL_AUTO_FOCUS));
-            getCameraHandler().sendEmptyMessage(CameraActions.CANCEL_AUTO_FOCUS_FINISH);
+            //getCameraHandler().sendEmptyMessage(CameraActions.CANCEL_AUTO_FOCUS_FINISH);
+            try {
+                getDispatchThread().runJob(new Runnable() {
+                    @Override
+                    public void run() {
+                        getCameraHandler().sendEmptyMessage(CameraActions.CANCEL_AUTO_FOCUS_FINISH);
+                    }});
+            } catch (final RuntimeException ex) {
+                getAgent().getCameraExceptionHandler().onDispatchThreadException(ex);
+            }
         }
 
         /**
